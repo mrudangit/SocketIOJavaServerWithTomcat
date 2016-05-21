@@ -64,6 +64,8 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
 
+        LOGGER.info("Transport Error : Reason :{} ", throwable.getMessage());
+
     }
 
     @Override
