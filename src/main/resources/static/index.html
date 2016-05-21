@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+    <script>
+        console.log('URL = ', window.location.href);
+
+        var url = window.location.href;
+
+        var socket = io(url,{transports:['websocket'],'sync disconnect on unload':true});
+        socket.on('connect', function (data) {
+            console.log(data);
+        });
+    </script>
+
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+</head>
+<body>
+This is Hello World Body
+</body>
+</html>
