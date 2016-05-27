@@ -16,20 +16,13 @@ public class SocketIOWebSocketConfigurer implements WebSocketConfigurer {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass().getName());
 
 
-
-    @Autowired
-    private ApplicationContext appContext;
-
     @Autowired
     SocketIOWebSocketProtocolHandler socketIOWebSocketProtocolHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
 
-        LOGGER.info("Initializing WebSocket");
-
-
-
+        LOGGER.info("Initializing Socket.IO WebSocket");
 
         webSocketHandlerRegistry.addHandler(socketIOWebSocketProtocolHandler,"/socket.io/*");
 
