@@ -290,7 +290,7 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         SocketIOConnectionHandler socketIOConnectionHandler = socketIOConnectionHandlerConcurrentHashMap.get(sessionNamespaceKey);
 
-        socketIOConnectionHandler.eventReceived(eventName,eventData);
+        socketIOConnectionHandler.receiveEvent(eventName,eventData);
 
 
     }
