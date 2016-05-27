@@ -3,6 +3,7 @@ package com.solutionarchitects;
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
 import com.solutionarchitects.protocol.SocketIOHandshake;
+import com.solutionarchitects.protocol.SocketIOMessageType;
 import com.solutionarchitects.protocol.SocketIOPacketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,19 +112,11 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
             case Upgrade:
                 break;
             case NoOp:
+                logger.info("NoOp");
+            default:
                 break;
-            case Connect:
-                break;
-            case DisConnect:
-                break;
-            case Event:
-                break;
-            case Ack:
-                break;
-            case Error:
-                break;
-            case BinaryEvent:
-                break;
+
+
         }
     }
 
@@ -188,15 +181,12 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
     private void HandleMessage(WebSocketSession session, String data) throws IOException {
 
-        SocketIOPacketType messageType = SocketIOPacketType.parseSubPacketType(GetOpCode(data.charAt(1)));
+        SocketIOMessageType messageType = SocketIOMessageType.parseMessageType(GetOpCode(data.charAt(1)));
 
         switch (messageType){
 
 
-            case Open:
-                HandleOpen( session, data);
-            case NoOp:
-                break;
+
             case Connect:
                 HandleConnect( session, data);
                 break;
@@ -263,7 +253,7 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
         SocketIOPacketType packetType= SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
         ++index;
 
-        SocketIOPacketType messageType = SocketIOPacketType.parseSubPacketType(GetOpCode(message.charAt(index)));
+        SocketIOMessageType messageType = SocketIOMessageType.parseMessageType(GetOpCode(message.charAt(index)));
         index++;
 
         StringBuilder sb = new StringBuilder();
