@@ -19,13 +19,14 @@ public class SocketIOConnectionHandler {
     private final WebSocketSession webSocketSession;
     private final String nameSpace;
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-
     private final String sessionid;
 
     public SocketIOConnectionHandler(WebSocketSession webSocketSession , String sessionId, String nameSpace){
         this.webSocketSession = webSocketSession;
         this.sessionid= sessionId;
         this.nameSpace = nameSpace;
+
+        logger.debug("SocketIONamespaceConnectionHandler Created Namespace : {} SessionId : {}", nameSpace,sessionId);
     }
 
 

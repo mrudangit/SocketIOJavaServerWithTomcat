@@ -6,23 +6,43 @@ import com.solutionarchitects.protocol.SocketIOHandshake;
 import com.solutionarchitects.protocol.SocketIOPacketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+@Service
 public class SocketIOWebSocketProtocolHandler implements org.springframework.web.socket.WebSocketHandler {
 
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
-    ConcurrentHashMap<WebSocketSession, String> webSocketSessionMap = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String, SocketIOConnectionHandler> socketIOConnectionHandlerConcurrentHashMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<WebSocketSession, String> webSocketSessionMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, SocketIOConnectionHandler> socketIOConnectionHandlerConcurrentHashMap = new ConcurrentHashMap<>();
+
+
+
+
+    @Resource
+    private SocketIOConfig socketIOConfig;
+
+
+    @PostConstruct
+    private void afterInit(){
+        logger.info("SocketIO Configuration : {} ", socketIOConfig);
+    }
+
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -36,8 +56,8 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
         SocketIOHandshake h = new SocketIOHandshake();
         h.sid= sessionId;
         h.upgrades=new String[]{};
-        h.pingInterval=25000;
-        h.pingTimeout=60000;
+        h.pingInterval=socketIOConfig.pingInterval;
+        h.pingTimeout=socketIOConfig.pingTimeout;
 
         TextMessage msg = new TextMessage(String.format("%d%s",0,gson.toJson(h)));
 
