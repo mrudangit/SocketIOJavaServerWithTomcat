@@ -9,7 +9,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-public class WebSocketConfig implements WebSocketConfigurer {
+public class SocketIOWebSocketConfig implements WebSocketConfigurer {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
         LOGGER.info("Initializing WebSocket");
 
-        webSocketHandlerRegistry.addHandler(new WebSocketHandler(),"/socket.io/*");
+        webSocketHandlerRegistry.addHandler(new SocketIOWebSocketProtocolHandler(),"/socket.io/*");
 
     }
 }

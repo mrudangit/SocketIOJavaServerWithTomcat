@@ -1,6 +1,6 @@
 package com.solutionarchitects.protocol;
 
-public enum  PacketType {
+public enum SocketIOPacketType {
 
 
 
@@ -8,15 +8,15 @@ public enum  PacketType {
 
     Connect(0, true), DisConnect(1, true), Event(2, true), Ack(3, true), Error(4, true), BinaryEvent(5, true);
 
-    public static final PacketType[] VALUES = values();
+    public static final SocketIOPacketType[] VALUES = values();
     private final int value;
     private final boolean inner;
 
-    PacketType(int value) {
+    SocketIOPacketType(int value) {
         this(value, false);
     }
 
-    PacketType(int value, boolean inner) {
+    SocketIOPacketType(int value, boolean inner) {
         this.value = value;
         this.inner = inner;
     }
@@ -25,8 +25,8 @@ public enum  PacketType {
         return value;
     }
 
-    public static PacketType parsePacketType(int value) {
-        for (PacketType type : VALUES) {
+    public static SocketIOPacketType parsePacketType(int value) {
+        for (SocketIOPacketType type : VALUES) {
             if (type.getValue() == value && !type.inner) {
                 return type;
             }
@@ -35,8 +35,8 @@ public enum  PacketType {
         return Invalid;
     }
 
-    public static PacketType parseSubPacketType(int value) {
-        for (PacketType type : VALUES) {
+    public static SocketIOPacketType parseSubPacketType(int value) {
+        for (SocketIOPacketType type : VALUES) {
             if (type.getValue() == value && type.inner) {
                 return type;
             }

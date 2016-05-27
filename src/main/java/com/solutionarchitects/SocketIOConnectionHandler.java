@@ -34,12 +34,6 @@ public class SocketIOConnectionHandler {
 
         logger.info("Event Received Namespace : {}  EventName {} Payload {}", nameSpace,eventName,payload);
 
-        HashMap data = new HashMap();
-
-
-        data.put("Name","Mrudang");
-
-        sendEvent("news", data);
 
     }
 

@@ -2,8 +2,8 @@ package com.solutionarchitects;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import com.solutionarchitects.protocol.Handshake;
-import com.solutionarchitects.protocol.PacketType;
+import com.solutionarchitects.protocol.SocketIOHandshake;
+import com.solutionarchitects.protocol.SocketIOPacketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WebSocketHandler implements org.springframework.web.socket.WebSocketHandler {
+public class SocketIOWebSocketProtocolHandler implements org.springframework.web.socket.WebSocketHandler {
 
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
@@ -33,7 +33,7 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
         Gson gson = new Gson();
 
         String sessionId = UUID.randomUUID().toString();
-        Handshake h = new Handshake();
+        SocketIOHandshake h = new SocketIOHandshake();
         h.sid= sessionId;
         h.upgrades=new String[]{};
         h.pingInterval=25000;
@@ -72,7 +72,7 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
     private void HandlePacket(WebSocketSession session , String packet) throws IOException {
 
-        PacketType packetType= ParsePacketType(packet);
+        SocketIOPacketType packetType= ParsePacketType(packet);
 
         switch (packetType){
 
@@ -168,7 +168,7 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
     private void HandleMessage(WebSocketSession session, String data) throws IOException {
 
-        PacketType messageType = PacketType.parseSubPacketType(GetOpCode(data.charAt(1)));
+        SocketIOPacketType messageType = SocketIOPacketType.parseSubPacketType(GetOpCode(data.charAt(1)));
 
         switch (messageType){
 
@@ -198,12 +198,12 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
         return c-48;
     }
 
-    private PacketType ParsePacketType(String data){
+    private SocketIOPacketType ParsePacketType(String data){
 
 
         int c = GetOpCode(data.charAt(0));
 
-        return PacketType.parsePacketType(c);
+        return SocketIOPacketType.parsePacketType(c);
 
     }
 
@@ -213,10 +213,10 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
         int index = 0;
 
-        PacketType packetType= PacketType.parsePacketType(GetOpCode(message.charAt(index)));
+        SocketIOPacketType packetType= SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
         ++index;
 
-        PacketType messageType = PacketType.parsePacketType(GetOpCode(message.charAt(index)));
+        SocketIOPacketType messageType = SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
         index++;
 
         String nameSpace = null;
@@ -240,10 +240,10 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
         int index = 0;
 
-        PacketType packetType= PacketType.parsePacketType(GetOpCode(message.charAt(index)));
+        SocketIOPacketType packetType= SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
         ++index;
 
-        PacketType messageType = PacketType.parseSubPacketType(GetOpCode(message.charAt(index)));
+        SocketIOPacketType messageType = SocketIOPacketType.parseSubPacketType(GetOpCode(message.charAt(index)));
         index++;
 
         StringBuilder sb = new StringBuilder();
@@ -271,7 +271,7 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
         String jsonData = message.substring(index);
 
-        logger.info("PacketType : [{}] MessageType : [{}] Namespace : [{}] AckId : [{}] JSON : {}", packetType,messageType,nameSpace,ackId,jsonData);
+        logger.info("SocketIOPacketType : [{}] MessageType : [{}] Namespace : [{}] AckId : [{}] JSON : {}", packetType,messageType,nameSpace,ackId,jsonData);
 
         Gson gson = new Gson();
 
