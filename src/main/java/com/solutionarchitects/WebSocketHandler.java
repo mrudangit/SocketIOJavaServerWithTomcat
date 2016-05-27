@@ -1,6 +1,7 @@
 package com.solutionarchitects;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.StringMap;
 import com.solutionarchitects.protocol.Handshake;
 import com.solutionarchitects.protocol.PacketType;
 import org.slf4j.Logger;
@@ -75,33 +76,33 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
         switch (packetType){
 
-            case OPEN:
+            case Open:
                 break;
-            case CLOSE:
+            case Close:
                 break;
-            case PING:
+            case Ping:
                 HandlePingPong(session);
                 break;
-            case PONG:
+            case Pong:
                 break;
-            case MESSAGE:
+            case Message:
                 HandleMessage(session,packet);
                 break;
-            case UPGRADE:
+            case Upgrade:
                 break;
-            case NOOP:
+            case NoOp:
                 break;
-            case CONNECT:
+            case Connect:
                 break;
-            case DISCONNECT:
+            case DisConnect:
                 break;
-            case EVENT:
+            case Event:
                 break;
-            case ACK:
+            case Ack:
                 break;
-            case ERROR:
+            case Error:
                 break;
-            case BINARY_EVENT:
+            case BinaryEvent:
                 break;
         }
     }
@@ -167,28 +168,28 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
     private void HandleMessage(WebSocketSession session, String data) throws IOException {
 
-        PacketType messageType = PacketType.valueOfInner(GetOpCode(data.charAt(1)));
+        PacketType messageType = PacketType.parseSubPacketType(GetOpCode(data.charAt(1)));
 
         switch (messageType){
 
 
-            case OPEN:
+            case Open:
                 HandleOpen( session, data);
-            case NOOP:
+            case NoOp:
                 break;
-            case CONNECT:
+            case Connect:
                 HandleConnect( session, data);
                 break;
-            case DISCONNECT:
+            case DisConnect:
                 break;
-            case EVENT:
+            case Event:
                 HandleEventMessage(session,data);
                 break;
-            case ACK:
+            case Ack:
                 break;
-            case ERROR:
+            case Error:
                 break;
-            case BINARY_EVENT:
+            case BinaryEvent:
                 break;
         }
     }
@@ -202,7 +203,7 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
         int c = GetOpCode(data.charAt(0));
 
-        return PacketType.valueOf(c);
+        return PacketType.parsePacketType(c);
 
     }
 
@@ -212,10 +213,10 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
         int index = 0;
 
-        PacketType packetType= PacketType.valueOf(GetOpCode(message.charAt(index)));
+        PacketType packetType= PacketType.parsePacketType(GetOpCode(message.charAt(index)));
         ++index;
 
-        PacketType messageType = PacketType.valueOfInner(GetOpCode(message.charAt(index)));
+        PacketType messageType = PacketType.parsePacketType(GetOpCode(message.charAt(index)));
         index++;
 
         String nameSpace = null;
@@ -239,10 +240,10 @@ public class WebSocketHandler implements org.springframework.web.socket.WebSocke
 
         int index = 0;
 
-        PacketType packetType= PacketType.valueOf(GetOpCode(message.charAt(index)));
+        PacketType packetType= PacketType.parsePacketType(GetOpCode(message.charAt(index)));
         ++index;
 
-        PacketType messageType = PacketType.valueOfInner(GetOpCode(message.charAt(index)));
+        PacketType messageType = PacketType.parseSubPacketType(GetOpCode(message.charAt(index)));
         index++;
 
         StringBuilder sb = new StringBuilder();

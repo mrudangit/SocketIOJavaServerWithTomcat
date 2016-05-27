@@ -6,12 +6,21 @@
     <script>
         console.log('URL = ', window.location.href);
 
-        var url = window.location.href;
+        var url = window.location.href +"mm";
 
-        var socket = io(url,{transports:['websocket'],'sync disconnect on unload':true});
-        socket.on('connect', function (data) {
-            console.log(data);
+        var socket = io.connect(url,{transports:['websocket'],'sync disconnect on unload':true});
+        socket.on('connect', function () {
+            console.log("Connected to WebSocket");
+            console.log(socket);
+
+            socket.emit("news1",{info:"urgent",data:"sky is falling"});
         });
+        
+        socket.on('news', function (data) {
+
+            document.write("From WS : " + JSON.stringify(data));
+        });
+        
     </script>
 
     <meta charset="UTF-8">
