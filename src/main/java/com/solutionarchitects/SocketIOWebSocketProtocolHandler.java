@@ -40,6 +40,7 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
     @PostConstruct
     private void afterInit(){
+
         logger.info("SocketIO Configuration : {} ", socketIOConfig);
     }
 
