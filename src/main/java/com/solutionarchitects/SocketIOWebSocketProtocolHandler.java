@@ -32,18 +32,15 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
     private final ConcurrentHashMap<String, SocketIOConnectionHandler> socketIOConnectionHandlerConcurrentHashMap = new ConcurrentHashMap<>();
 
 
-
-
     @Resource
     private SocketIOConfig socketIOConfig;
 
 
     @PostConstruct
-    private void afterInit(){
+    private void afterInit() {
 
         logger.info("SocketIO Configuration : {} ", socketIOConfig);
     }
-
 
 
     @Override
@@ -56,21 +53,20 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         String sessionId = UUID.randomUUID().toString();
         SocketIOHandshake h = new SocketIOHandshake();
-        h.sid= sessionId;
-        h.upgrades=new String[]{};
-        h.pingInterval=socketIOConfig.pingInterval;
-        h.pingTimeout=socketIOConfig.pingTimeout;
+        h.sid = sessionId;
+        h.upgrades = new String[]{};
+        h.pingInterval = socketIOConfig.pingInterval;
+        h.pingTimeout = socketIOConfig.pingTimeout;
 
-        TextMessage msg = new TextMessage(String.format("%d%s",0,gson.toJson(h)));
-
-        session.sendMessage(msg);
-
-        msg =new TextMessage(String.format("%d%d",4,0));
+        TextMessage msg = new TextMessage(String.format("%d%s", 0, gson.toJson(h)));
 
         session.sendMessage(msg);
 
-        webSocketSessionMap.put(session,sessionId);
+        msg = new TextMessage(String.format("%d%d", 4, 0));
 
+        session.sendMessage(msg);
+
+        webSocketSessionMap.put(session, sessionId);
 
 
     }
@@ -80,23 +76,23 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         logger.info("Message = {} Session ID : {}", message, session);
 
-        String payload = (String)message.getPayload();
+        String payload = (String) message.getPayload();
 
-        try{
+        try {
 
-            HandlePacket(session,payload);
-        }catch (Exception exp){
+            HandlePacket(session, payload);
+        } catch (Exception exp) {
             logger.error("Error handlign packet", exp);
         }
 
     }
 
 
-    private void HandlePacket(WebSocketSession session , String packet) throws IOException {
+    private void HandlePacket(WebSocketSession session, String packet) throws IOException {
 
-        SocketIOPacketType packetType= ParsePacketType(packet);
+        SocketIOPacketType packetType = ParsePacketType(packet);
 
-        switch (packetType){
+        switch (packetType) {
 
             case Open:
                 break;
@@ -108,7 +104,7 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
             case Pong:
                 break;
             case Message:
-                HandleMessage(session,packet);
+                HandleMessage(session, packet);
                 break;
             case Upgrade:
                 break;
@@ -130,11 +126,11 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
         session.sendMessage(t);
     }
 
-    private void HandleEventMessage(WebSocketSession session ,String data){
+    private void HandleEventMessage(WebSocketSession session, String data) {
 
         try {
-            DecodeEventMessage(session,data);
-        }catch (Exception exp){
+            DecodeEventMessage(session, data);
+        } catch (Exception exp) {
 
             logger.error("Error decoding data", exp);
         }
@@ -153,18 +149,15 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
         session.sendMessage(msg);
 
 
-        logger.info("Connected Namespace : {}",nameSpace);
+        logger.info("Connected Namespace : {}", nameSpace);
 
         String sessionId = webSocketSessionMap.get(session);
-        String sessionIdNamespaceKey= String.format("%s#%s",sessionId,nameSpace);
+        String sessionIdNamespaceKey = String.format("%s#%s", sessionId, nameSpace);
 
 
-        SocketIOConnectionHandler socketIOConnectionHandler = new SocketIOConnectionHandler(session,sessionId,nameSpace);
+        SocketIOConnectionHandler socketIOConnectionHandler = new SocketIOConnectionHandler(session, sessionId, nameSpace);
 
-        socketIOConnectionHandlerConcurrentHashMap.put(sessionIdNamespaceKey,socketIOConnectionHandler);
-
-
-
+        socketIOConnectionHandlerConcurrentHashMap.put(sessionIdNamespaceKey, socketIOConnectionHandler);
 
 
     }
@@ -184,17 +177,14 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         SocketIOMessageType messageType = SocketIOMessageType.parseMessageType(GetOpCode(data.charAt(1)));
 
-        switch (messageType){
-
-
-
+        switch (messageType) {
             case Connect:
-                HandleConnect( session, data);
+                HandleConnect(session, data);
                 break;
             case DisConnect:
                 break;
             case Event:
-                HandleEventMessage(session,data);
+                HandleEventMessage(session, data);
                 break;
             case Ack:
                 break;
@@ -205,12 +195,11 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
         }
     }
 
-    private int GetOpCode(char c){
-        return c-48;
+    private int GetOpCode(char c) {
+        return c - 48;
     }
 
-    private SocketIOPacketType ParsePacketType(String data){
-
+    private SocketIOPacketType ParsePacketType(String data) {
 
         int c = GetOpCode(data.charAt(0));
 
@@ -219,12 +208,11 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
     }
 
 
-
-    private String DecodeConnectMessage(String message){
+    private String DecodeConnectMessage(String message) {
 
         int index = 0;
 
-        SocketIOPacketType packetType= SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
+        SocketIOPacketType packetType = SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
         ++index;
 
         SocketIOPacketType messageType = SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
@@ -232,26 +220,22 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         String nameSpace = null;
 
-        if('/' == message.charAt(index)) {
+        if ('/' == message.charAt(index)) {
 
-
-            nameSpace=message.substring(index);
+            nameSpace = message.substring(index);
 
         }
-
-
-
 
         return nameSpace;
 
     }
 
 
-    private void DecodeEventMessage(WebSocketSession webSocketSession, String message){
+    private void DecodeEventMessage(WebSocketSession webSocketSession, String message) {
 
         int index = 0;
 
-        SocketIOPacketType packetType= SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
+        SocketIOPacketType packetType = SocketIOPacketType.parsePacketType(GetOpCode(message.charAt(index)));
         ++index;
 
         SocketIOMessageType messageType = SocketIOMessageType.parseMessageType(GetOpCode(message.charAt(index)));
@@ -259,9 +243,9 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         StringBuilder sb = new StringBuilder();
 
-        if('/' == message.charAt(index)) {
+        if ('/' == message.charAt(index)) {
 
-            while(message.charAt(index) != ','){
+            while (message.charAt(index) != ',') {
                 sb.append(message.charAt(index++));
             }
 
@@ -271,7 +255,7 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         StringBuilder idSb = new StringBuilder();
 
-        while(Character.isDigit(message.charAt(index))){
+        while (Character.isDigit(message.charAt(index))) {
             idSb.append(message.charAt(index));
             index++;
         }
@@ -282,26 +266,24 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
         String jsonData = message.substring(index);
 
-        logger.info("SocketIOPacketType : [{}] MessageType : [{}] Namespace : [{}] AckId : [{}] JSON : {}", packetType,messageType,nameSpace,ackId,jsonData);
+        logger.info("SocketIOPacketType : [{}] MessageType : [{}] Namespace : [{}] AckId : [{}] JSON : {}", packetType, messageType, nameSpace, ackId, jsonData);
 
         Gson gson = new Gson();
 
-        ArrayList arrayList = gson.fromJson(jsonData,ArrayList.class);
+        ArrayList arrayList = gson.fromJson(jsonData, ArrayList.class);
 
         String eventName = (String) arrayList.get(0);
         StringMap eventData = (StringMap) arrayList.get(1);
 
-        logger.info("Event Name = [{}]  Data : {} ",eventName,eventData);
-
-
+        logger.info("Event Name = [{}]  Data : {} ", eventName, eventData);
 
         String sessionId = webSocketSessionMap.get(webSocketSession);
 
-        String sessionNamespaceKey = String.format("%s#%s",sessionId,nameSpace);
+        String sessionNamespaceKey = String.format("%s#%s", sessionId, nameSpace);
 
         SocketIOConnectionHandler socketIOConnectionHandler = socketIOConnectionHandlerConcurrentHashMap.get(sessionNamespaceKey);
 
-        socketIOConnectionHandler.receiveEvent(eventName,eventData);
+        socketIOConnectionHandler.receiveEvent(eventName, eventData);
 
 
     }
@@ -309,13 +291,13 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 
-        logger.warn("Transport Session ID  : {}  Error : {}",session.getId(),exception.getMessage());
+        logger.warn("Transport Session ID  : {}  Error : {}", session.getId(), exception.getMessage());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 
-        logger.info("Connection Closed =========================== {} Session ID : {} ",closeStatus, session.getId());
+        logger.info("Connection Closed =========================== {} Session ID : {} ", closeStatus, session.getId());
     }
 
     @Override
