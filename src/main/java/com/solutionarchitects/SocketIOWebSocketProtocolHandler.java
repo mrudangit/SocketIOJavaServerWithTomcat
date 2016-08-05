@@ -27,7 +27,6 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-
     private final ConcurrentHashMap<WebSocketSession, String> webSocketSessionMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, SocketIOConnectionHandler> socketIOConnectionHandlerConcurrentHashMap = new ConcurrentHashMap<>();
 
@@ -40,14 +39,13 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
     private void afterInit() {
 
         logger.info("SocketIO Configuration : {} ", socketIOConfig);
-    }
 
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
         logger.info("New WebSocket Connection Established : Session ID = {}", session);
-
 
         Gson gson = new Gson();
 
@@ -140,25 +138,22 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
 
     private void HandleConnect(WebSocketSession session, String data) throws IOException {
 
-
         logger.info("Received Connected {}", data);
+
         String nameSpace = DecodeConnectMessage(data);
 
         TextMessage msg = new TextMessage(String.format("%d%d%s", 4, 0, nameSpace));
 
         session.sendMessage(msg);
 
-
         logger.info("Connected Namespace : {}", nameSpace);
 
         String sessionId = webSocketSessionMap.get(session);
         String sessionIdNamespaceKey = String.format("%s#%s", sessionId, nameSpace);
 
-
         SocketIOConnectionHandler socketIOConnectionHandler = new SocketIOConnectionHandler(session, sessionId, nameSpace);
 
         socketIOConnectionHandlerConcurrentHashMap.put(sessionIdNamespaceKey, socketIOConnectionHandler);
-
 
     }
 
@@ -167,8 +162,8 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
         String nameSpace = data.substring(2);
 
         TextMessage msg = new TextMessage(String.format("%d%d%s", 4, 0, nameSpace));
-        session.sendMessage(msg);
 
+        session.sendMessage(msg);
 
     }
 
@@ -225,6 +220,8 @@ public class SocketIOWebSocketProtocolHandler implements org.springframework.web
             nameSpace = message.substring(index);
 
         }
+
+        logger.debug("PacketType : {} MessageType : {} NameSpace : {}", packetType, message, nameSpace);
 
         return nameSpace;
 

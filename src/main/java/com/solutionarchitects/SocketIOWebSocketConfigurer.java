@@ -15,7 +15,6 @@ public class SocketIOWebSocketConfigurer implements WebSocketConfigurer {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass().getName());
 
-
     @Autowired
     SocketIOWebSocketProtocolHandler socketIOWebSocketProtocolHandler;
 

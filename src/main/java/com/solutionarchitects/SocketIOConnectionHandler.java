@@ -30,14 +30,11 @@ public class SocketIOConnectionHandler {
     }
 
 
-
     public void receiveEvent(String eventName, StringMap payload){
 
         logger.info("Event Received Namespace : {}  EventName {} Payload {}", nameSpace,eventName,payload);
 
-
     }
-
 
     public void sendEvent(String eventName, Object payload){
 
@@ -60,7 +57,5 @@ public class SocketIOConnectionHandler {
 
 
     }
-
-
 
 }

@@ -2,10 +2,6 @@ package com.solutionarchitects.protocol;
 
 public enum SocketIOMessageType {
 
-
-
-
-
     Invalid(-1),
 
     Connect(0), DisConnect(1), Event(2), Ack(3), Error(4), BinaryEvent(5);
@@ -16,8 +12,6 @@ public enum SocketIOMessageType {
     SocketIOMessageType(int value) {
         this.value=value;
     }
-
-
 
     public int getValue() {
         return value;
@@ -32,7 +26,5 @@ public enum SocketIOMessageType {
 
         return Invalid;
     }
-
-
 
 }
