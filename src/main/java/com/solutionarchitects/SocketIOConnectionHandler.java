@@ -19,32 +19,24 @@ public class SocketIOConnectionHandler {
     private final WebSocketSession webSocketSession;
     private final String nameSpace;
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-
     private final String sessionid;
 
     public SocketIOConnectionHandler(WebSocketSession webSocketSession , String sessionId, String nameSpace){
         this.webSocketSession = webSocketSession;
         this.sessionid= sessionId;
         this.nameSpace = nameSpace;
+
+        logger.debug("SocketIONamespaceConnectionHandler Created Namespace : {} SessionId : {}", nameSpace,sessionId);
     }
 
 
-
-    public void eventReceived(String eventName, StringMap payload){
+    public void receiveEvent(String eventName, StringMap payload){
 
         logger.info("Event Received Namespace : {}  EventName {} Payload {}", nameSpace,eventName,payload);
 
-        HashMap data = new HashMap();
-
-
-        data.put("Name","Mrudang");
-
-        sendEvent("news", data);
-
     }
 
-
-    private void sendEvent(String eventName, Object payload){
+    public void sendEvent(String eventName, Object payload){
 
         ArrayList eventPayload = new ArrayList();
 
@@ -65,7 +57,5 @@ public class SocketIOConnectionHandler {
 
 
     }
-
-
 
 }

@@ -1,6 +1,6 @@
 package com.solutionarchitects.protocol;
 
-public class Handshake {
+public class SocketIOHandshake {
 
 
     public String sid;
