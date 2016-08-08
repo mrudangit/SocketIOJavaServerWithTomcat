@@ -1,4 +1,4 @@
-package com.solutionarchitects.rx;
+package com.solutionarchitects.common.rx;
 
 /**
  * Created by e211303 on 3/24/2016.

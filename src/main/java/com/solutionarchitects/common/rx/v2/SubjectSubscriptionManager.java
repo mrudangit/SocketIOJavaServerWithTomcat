@@ -1,18 +1,30 @@
-package com.solutionarchitects.rx;
-
 /**
- * Created by e211303 on 3/24/2016.
+ * Copyright 2014 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.solutionarchitects.common.rx.v2;
+
+
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
+import rx.functions.Func2;
 import rx.internal.operators.NotificationLite;
 import rx.subscriptions.Subscriptions;
 
@@ -24,8 +36,12 @@ import java.util.concurrent.atomic.AtomicReference;
  * Represents the typical state and OnSubscribe logic for a Subject implementation.
  * @param <T> the source and return value type
  */
-
-final public class SubjectSubscriptionManager<T> extends AtomicReference<SubjectSubscriptionManager.State<T>> implements OnSubscribe<T> {
+@SuppressWarnings({"unchecked", "rawtypes"})
+/* package */final class SubjectSubscriptionManager<T> extends AtomicReference<SubjectSubscriptionManager.State<T>> implements OnSubscribe<T> {
+    /** */
+    private static final long serialVersionUID = 6035251036011671568L;
+    private final Func2<T, T, T> accumulator;
+    public final boolean hasAccumulator;
     /** Stores the latest value or the terminal value for some Subjects. */
     volatile Object latest;
     /** Indicates that the subject is active (cheaper than checking the state).*/
@@ -39,11 +55,17 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
     /** The notification lite. */
     public final NotificationLite<T> nl = NotificationLite.instance();
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
-
-
     public SubjectSubscriptionManager() {
         super(State.EMPTY);
+        this.accumulator=null;
+        this.hasAccumulator = false;
+    }
+
+
+    public SubjectSubscriptionManager(Func2<T,T,T> accumulator) {
+        super(State.EMPTY);
+        this.accumulator = accumulator;
+        this.hasAccumulator = accumulator!=null;
     }
 
     @Override
@@ -68,7 +90,15 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
     }
     /** Set the latest NotificationLite value. */
     void setLatest(Object value) {
-        latest = value;
+        if(accumulator == null) {
+            latest = value;
+        }else{
+            if(latest == null){
+                latest=value;
+            }else {
+                latest = accumulator.call((T)latest, (T)value);
+            }
+        }
     }
     /** @return Retrieve the latest NotificationLite value */
     Object getLatest() {
@@ -196,9 +226,9 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
      * emission facilities.
      * @param <T> the consumed value type of the actual Observer
      */
-    static final class SubjectObserver<T> implements Observer<T> {
+    protected static final class SubjectObserver<T> implements Observer<T> {
         /** The actual Observer. */
-        final Observer<? super T> actual;
+        final Subscriber<? super T> actual;
         /** Was the emitFirst run? Guarded by this. */
         boolean first = true;
         /** Guarded by this. */
@@ -207,10 +237,10 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
         List<Object> queue;
         /* volatile */boolean fastPath;
         /** Indicate that the observer has caught up. */
-        protected volatile boolean caughtUp;
+        volatile boolean caughtUp;
         /** Indicate where the observer is at replaying. */
         private volatile Object index;
-        public SubjectObserver(Observer<? super T> actual) {
+        public SubjectObserver(Subscriber<? super T> actual) {
             this.actual = actual;
         }
         @Override
@@ -231,7 +261,7 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
          * @param n the NotificationLite value
          * @param nl the type-appropriate notification lite object
          */
-        protected void emitNext(Object n, final NotificationLite<T> nl) {
+        void emitNext(Object n, final NotificationLite<T> nl) {
             if (!fastPath) {
                 synchronized (this) {
                     first = false;
@@ -253,7 +283,7 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
          * @param n the NotificationLite value
          * @param nl the type-appropriate notification lite object
          */
-        protected void emitFirst(Object n, final NotificationLite<T> nl) {
+        void emitFirst(Object n, final NotificationLite<T> nl) {
             synchronized (this) {
                 if (!first || emitting) {
                     return;
@@ -271,7 +301,7 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
          * @param current the current content to emit
          * @param nl the type-appropriate notification lite object
          */
-        protected void emitLoop(List<Object> localQueue, Object current, final NotificationLite<T> nl) {
+        void emitLoop(List<Object> localQueue, Object current, final NotificationLite<T> nl) {
             boolean once = true;
             boolean skipFinal = false;
             try {
@@ -308,14 +338,14 @@ final public class SubjectSubscriptionManager<T> extends AtomicReference<Subject
          * @param n the value to dispatch
          * @param nl the type-appropriate notification lite object
          */
-        protected void accept(Object n, final NotificationLite<T> nl) {
+        void accept(Object n, final NotificationLite<T> nl) {
             if (n != null) {
                 nl.accept(actual, n);
             }
         }
 
         /** @return the actual Observer. */
-        protected Observer<? super T> getActual() {
+        Observer<? super T> getActual() {
             return actual;
         }
         /**

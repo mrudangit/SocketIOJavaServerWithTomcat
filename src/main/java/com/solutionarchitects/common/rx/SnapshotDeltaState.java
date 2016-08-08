@@ -1,4 +1,4 @@
-package com.solutionarchitects.rx;
+package com.solutionarchitects.common.rx;
 
 import rx.functions.Func2;
 import rx.internal.operators.NotificationLite;
