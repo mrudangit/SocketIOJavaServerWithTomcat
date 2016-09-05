@@ -1,4 +1,4 @@
-package com.solutionarchitects;
+package com.solutionarchitects.socketio;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;

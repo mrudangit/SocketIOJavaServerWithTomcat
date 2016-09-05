@@ -1,18 +1,14 @@
-package com.solutionarchitects;
+package com.solutionarchitects.socketio;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import com.solutionarchitects.protocol.SocketIOHandshake;
-import com.solutionarchitects.protocol.SocketIOMessageType;
-import com.solutionarchitects.protocol.SocketIOPacketType;
+import com.solutionarchitects.socketio.protocol.SocketIOHandshake;
+import com.solutionarchitects.socketio.protocol.SocketIOMessageType;
+import com.solutionarchitects.socketio.protocol.SocketIOPacketType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -23,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
-public class SocketIOWebSocketProtocolHandler implements org.springframework.web.socket.WebSocketHandler {
+public class SocketIOWebSocketProtocolHandler implements WebSocketHandler {
 
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());

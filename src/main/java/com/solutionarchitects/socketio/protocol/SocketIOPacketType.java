@@ -1,4 +1,4 @@
-package com.solutionarchitects.protocol;
+package com.solutionarchitects.socketio.protocol;
 
 public enum SocketIOPacketType {
 

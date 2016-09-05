@@ -1,4 +1,4 @@
-package com.solutionarchitects;
+package com.solutionarchitects.socketio;
 
 
 import org.springframework.beans.factory.annotation.Value;

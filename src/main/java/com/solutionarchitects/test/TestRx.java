@@ -1,10 +1,8 @@
 package com.solutionarchitects.test;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.solutionarchitects.common.rx.PublishSubject;
-import com.solutionarchitects.common.rx.v2.ReplaySubject;
 import com.solutionarchitects.common.rx.v2.BehaviorSubject;
-
+import com.solutionarchitects.common.rx.v2.ReplaySubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -15,9 +13,6 @@ import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
